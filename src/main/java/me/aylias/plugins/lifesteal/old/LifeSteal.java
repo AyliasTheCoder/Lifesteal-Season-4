@@ -99,7 +99,9 @@ public class LifeSteal extends JavaPlugin implements Listener {
                                     StandardCopyOption.REPLACE_EXISTING);
                             new File("plugins/aLifeSteal.jar").delete();
                         } catch (IOException e) {
+                           e.printStackTrace();
                         }
+
                         Bukkit.dispatchCommand(getServer().getConsoleSender(), "restart");
                     }
                 }.runTaskLater(this, 200);
