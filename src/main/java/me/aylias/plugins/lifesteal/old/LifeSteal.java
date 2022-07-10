@@ -53,6 +53,10 @@ public class LifeSteal extends JavaPlugin implements Listener {
       Bukkit.getPluginManager().registerEvents(new Events(), this);
       Bukkit.getPluginManager().registerEvents(new DeathListener(), this);
 
+      getCommand("withdraw").setExecutor(this);
+      getCommand("heartadd").setExecutor(this);
+
+
       Update();
    }
 
@@ -142,6 +146,18 @@ public class LifeSteal extends JavaPlugin implements Listener {
          } else {
             player.sendMessage(ChatColor.RED + "(!) You can't withdraw a negative number of hearts!");
          }
+      }
+
+      if (label.equalsIgnoreCase("heartadd")) {
+            if (sender instanceof Player player) {
+                if (player.getInventory().firstEmpty() != -1) {
+                player.getInventory().addItem(getInstance().heart);
+                } else {
+                player.getWorld().dropItemNaturally(player.getLocation(), getInstance().heart);
+                }
+
+                player.sendMessage(ChatColor.GOLD + "(!) Successfully added a heart!");
+            }
       }
 
       return true;
