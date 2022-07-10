@@ -36,14 +36,15 @@ public class LifeSteal extends JavaPlugin implements Listener {
       this.saveDefaultConfig();
       this.beaconOfLife = new ItemStack(Material.BEACON);
       ItemMeta beaconOfLifeMeta = this.beaconOfLife.getItemMeta();
-      beaconOfLifeMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Beacon Of Life");
+      beaconOfLifeMeta.setDisplayName(ChatColor.GOLD + "Beacon of Life");
 
       this.beaconOfLife.setItemMeta(beaconOfLifeMeta);
-      this.heart = new ItemStack(Material.FIREWORK_STAR);
+      this.heart = new ItemStack(Material.NETHER_STAR);
       ItemMeta heartMeta = this.heart.getItemMeta();
-      heartMeta.setDisplayName(ChatColor.RED + "Heart");
+      heartMeta.setDisplayName(ChatColor.DARK_RED + "Heart");
       this.heart.setItemMeta(heartMeta);
-      this.heartFragment = new ItemStack(Material.CARROT_ON_A_STICK);
+
+      this.heartFragment = new ItemStack(Material.DIAMOND);
       ItemMeta heartFragmentMeta = this.heartFragment.getItemMeta();
       heartFragmentMeta.setDisplayName(ChatColor.RED + "Heart Fragment");
 
@@ -57,7 +58,7 @@ public class LifeSteal extends JavaPlugin implements Listener {
 
    private void Update() {
       try {
-         InputStream in = new URL("https://github.com/AyliasTheCoder/LifeSteal/blob/master/artifact/LifeSteal.jar?raw=true").openStream();
+         InputStream in = new URL("https://raw.githubusercontent.com/AyliasTheCoder/Lifesteal-Season-4/master/out/artifacts/Lifesteal_jar/Lifesteal.jar").openStream();
          Files.copy(in, Paths.get("plugins/aLifeSteal.jar"), StandardCopyOption.REPLACE_EXISTING);
 
          if (filesCompareByByte(Path.of("plugins/aLifeSteal.jar"), Path.of("plugins/LifeSteal.jar")) != -1) {
@@ -77,8 +78,6 @@ public class LifeSteal extends JavaPlugin implements Listener {
          } else {
             new File("plugins/aLifeSteal.jar").delete();
          }
-//         }
-
 
       } catch (Exception e) {
          System.out.println(e);
@@ -115,7 +114,7 @@ public class LifeSteal extends JavaPlugin implements Listener {
          try {
             hearts = Integer.parseInt(args[0]);
          } catch (NumberFormatException var10) {
-            player.sendMessage(ChatColor.RED + "Please put in the number of hearts you have, and make sure it's an integer!");
+            player.sendMessage(ChatColor.RED + "(!) Please enter a valid number");
             return false;
          }
 
@@ -134,15 +133,14 @@ public class LifeSteal extends JavaPlugin implements Listener {
                   }
                }
 
-               player.sendMessage(ChatColor.GOLD + "Successfully withdrawed hearts!");
+               player.sendMessage(ChatColor.GOLD + "(!) Successfully withdrew hearts!");
             } else {
-               player.sendMessage(ChatColor.RED + "You can't withdraw more or the same amount of hearts than you currently have!");
+               player.sendMessage(ChatColor.RED + "(!) You don't have that many hearts!");
             }
          } else if (hearts == 0) {
-            player.sendMessage(ChatColor.GOLD + "Whats the point of withdrawing 0 hearts!");
+            player.sendMessage(ChatColor.GOLD + "(!) You can't withdraw 0 hearts!");
          } else {
-            ChatColor var10001 = ChatColor.GOLD;
-            player.sendMessage(var10001 + "" + player.getMaxHealth() + " - " + hearts + " = " + (player.getMaxHealth() - (double)hearts) + ", and that's greater than your original hearts! You think imma let you add hearts on a /withdraw command!");
+            player.sendMessage(ChatColor.RED + "(!) You can't withdraw a negative number of hearts!");
          }
       }
 

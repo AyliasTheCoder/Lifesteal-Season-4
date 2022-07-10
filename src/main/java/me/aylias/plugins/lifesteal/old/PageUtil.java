@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.inventory.ItemStack;
 
 public class PageUtil {
+
    public static List<ItemStack> getPageItems(List<ItemStack> items, int page, int spaces) {
       int upperBound = page * spaces;
       int lowerBound = upperBound - spaces;

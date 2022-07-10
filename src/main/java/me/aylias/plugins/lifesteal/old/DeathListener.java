@@ -13,6 +13,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import java.util.Date;
 
 public class DeathListener implements Listener {
+
     @EventHandler
     public void onDeath(PlayerDeathEvent e) {
         Player dead = e.getEntity();

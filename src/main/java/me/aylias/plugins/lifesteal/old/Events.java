@@ -1,12 +1,9 @@
 package me.aylias.plugins.lifesteal.old;
 
-import java.util.List;
-import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.BanList.Type;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.HumanEntity;
@@ -15,19 +12,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
+import java.util.UUID;
 
 public class Events implements Listener {
+
     public static List<String> deadPlayers;
-
-
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
@@ -62,10 +58,10 @@ public class Events implements Listener {
         Player player = e.getPlayer();
         Inventory playerInv = player.getInventory();
         if (e.getItem() != null && (act.equals(Action.RIGHT_CLICK_AIR) || act.equals(Action.RIGHT_CLICK_BLOCK))) {
-            if (e.getItem().isSimilar(LifeSteal.getInstance().beaconOfLife)) {
+            if (e.getItem().isSimilar(LifeSteal.getInstance().beaconOfLife) && e.getItem().getItemMeta().getDisplayName().equals(LifeSteal.getInstance().beaconOfLife.getItemMeta().getDisplayName())) {
                 new GUI(player, 1);
             } else if (e.getItem().isSimilar(LifeSteal.getInstance().heart) && player.getMaxHealth() <= 38.0D) {
-                for(int i = 0; i < playerInv.getSize(); ++i) {
+                for (int i = 0; i < playerInv.getSize(); ++i) {
                     if (playerInv.getItem(i) != null && playerInv.getItem(i).isSimilar(LifeSteal.getInstance().heart)) {
                         playerInv.getItem(i).setAmount(playerInv.getItem(i).getAmount() - 1);
                         break;
@@ -117,7 +113,7 @@ public class Events implements Listener {
         if (LifeSteal.getInstance().gui != null) {
             HumanEntity var3 = e.getWhoClicked();
             if (var3 instanceof Player) {
-                Player player = (Player)var3;
+                Player player = (Player) var3;
                 Inventory playerInv = player.getInventory();
                 ItemStack item = e.getCurrentItem();
                 Inventory inv = e.getInventory();
@@ -143,7 +139,7 @@ public class Events implements Listener {
                             LifeSteal.getInstance().saveConfig();
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pardon " + offlinePlayer.getName());
 
-                            for(int i = 0; i < playerInv.getSize(); ++i) {
+                            for (int i = 0; i < playerInv.getSize(); ++i) {
                                 if (playerInv.getItem(i) != null && playerInv.getItem(i).isSimilar(LifeSteal.getInstance().beaconOfLife)) {
                                     playerInv.getItem(i).setAmount(playerInv.getItem(i).getAmount() - 1);
                                     break;

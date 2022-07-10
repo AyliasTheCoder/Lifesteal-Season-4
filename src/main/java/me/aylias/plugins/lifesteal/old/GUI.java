@@ -16,13 +16,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 public class GUI {
+
    public GUI(Player p, int page) {
       LifeSteal.instance.gui = Bukkit.createInventory((InventoryHolder)null, 45, ChatColor.BLUE + "Choose Who To Revive");
       List<ItemStack> allItems = new ArrayList();
-      Iterator var4 = LifeSteal.getInstance().getConfig().getStringList("Dead").iterator();
 
-      while(var4.hasNext()) {
-         String uuid = (String)var4.next();
+      for (String uuid : LifeSteal.getInstance().getConfig().getStringList("Dead")) {
          allItems.add(this.getPlayerHead(Bukkit.getOfflinePlayer(UUID.fromString(uuid))));
       }
 
@@ -31,11 +30,11 @@ public class GUI {
       if (PageUtil.isPageValid(allItems, page - 1, 43)) {
          left = new ItemStack(Material.LIME_WOOL);
          leftMeta = left.getItemMeta();
-         leftMeta.setDisplayName(ChatColor.GREEN + "Go Left!");
+         leftMeta.setDisplayName(ChatColor.GREEN + "Next Page");
       } else {
          left = new ItemStack(Material.RED_WOOL);
          leftMeta = left.getItemMeta();
-         leftMeta.setDisplayName(ChatColor.RED + "Cannot Go Left!");
+         leftMeta.setDisplayName(ChatColor.RED + "No More Pages");
       }
 
       leftMeta.setLocalizedName(page + "");
@@ -45,11 +44,11 @@ public class GUI {
       if (PageUtil.isPageValid(allItems, page + 1, 43)) {
          right = new ItemStack(Material.LIME_WOOL);
          rightMeta = right.getItemMeta();
-         rightMeta.setDisplayName(ChatColor.GREEN + "Go Right!");
+         rightMeta.setDisplayName(ChatColor.GREEN + "Previous Page");
       } else {
          right = new ItemStack(Material.RED_WOOL);
          rightMeta = right.getItemMeta();
-         rightMeta.setDisplayName(ChatColor.RED + "Cannot Go Right!");
+         rightMeta.setDisplayName(ChatColor.RED + "No More Pages");
       }
 
       right.setItemMeta(rightMeta);
