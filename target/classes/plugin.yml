@@ -1,5 +1,5 @@
 name: LifestealS4
 version: 1.0
 author: Aylias
-main: me.aylias.plugins.lifesteal.season4.Main
+main: me.aylias.plugins.lifesteal.old.LifeSteal
 api-version: 1.17
