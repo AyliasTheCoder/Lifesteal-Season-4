@@ -3,3 +3,8 @@ version: 1.0
 author: Aylias
 main: me.aylias.plugins.lifesteal.old.LifeSteal
 api-version: 1.17
+commands:
+  withdraw:
+    usage: /withdraw
+  heartadd:
+    usage: /heartadd
