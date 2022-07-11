@@ -1,6 +1,7 @@
 /* Decompiler 36ms, total 266ms, lines 93 */
 package me.aylias.plugins.lifesteal.old;
 
+import me.aylias.plugins.lifesteal.season4.Recipes;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -72,7 +73,7 @@ public class LifeSteal extends JavaPlugin implements Listener {
         heartFragmentMeta.setDisplayName(ChatColor.RED + "Heart Fragment");
 
         this.heartFragment.setItemMeta(heartFragmentMeta);
-        new Recipes(this);
+//        new Recipes(this);
         Bukkit.getPluginManager().registerEvents(new Events(), this);
         Bukkit.getPluginManager().registerEvents(new DeathListener(), this);
 
@@ -99,7 +100,7 @@ public class LifeSteal extends JavaPlugin implements Listener {
                                     StandardCopyOption.REPLACE_EXISTING);
                             new File("plugins/aLifeSteal.jar").delete();
                         } catch (IOException e) {
-                           e.printStackTrace();
+                            e.printStackTrace();
                         }
 
                         Bukkit.dispatchCommand(getServer().getConsoleSender(), "restart");
@@ -157,16 +158,10 @@ public class LifeSteal extends JavaPlugin implements Listener {
                 return true;
             }
             if (sender instanceof Player player) {
-                if (player.getInventory().firstEmpty() != -1) {
-                    player.getInventory().addItem(getInstance().heart);
-                } else {
-                    player.getWorld().dropItemNaturally(player.getLocation(), getInstance().heart);
-                }
+                player.setMaxHealth(player.getMaxHealth() + 2);
 
                 player.sendMessage(ChatColor.GOLD + "(!) Successfully added a heart!");
             }
-
-
         }
 
         return true;

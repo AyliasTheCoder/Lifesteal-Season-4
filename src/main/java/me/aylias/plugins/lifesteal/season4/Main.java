@@ -1,74 +1,170 @@
 package me.aylias.plugins.lifesteal.season4;
 
+import me.aylias.plugins.lifesteal.old.DeathListener;
+import me.aylias.plugins.lifesteal.old.Events;
+import me.aylias.plugins.lifesteal.old.LifeSteal;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
 
-    @Override
+    public static Main instance;
+    public ItemStack beaconOfLife;
+    public ItemStack heart;
+    public ItemStack heartFragment;
+    Inventory gui;
+
+    public static long filesCompareByByte(Path path1, Path path2) throws IOException {
+        try (BufferedInputStream fis1 = new BufferedInputStream(new FileInputStream(path1.toFile()));
+             BufferedInputStream fis2 = new BufferedInputStream(new FileInputStream(path2.toFile()))) {
+
+            int ch = 0;
+            long pos = 1;
+            while ((ch = fis1.read()) != -1) {
+                if (ch != fis2.read()) {
+                    return pos;
+                }
+                pos += 1;
+            }
+            if (fis2.read() == -1) {
+                return -1;
+            } else {
+                return pos;
+            }
+        }
+    }
+
+    public static Main getInstance() {
+        return instance;
+    }
+
     public void onEnable() {
-        saveDefaultConfig();
+        instance = this;
+        this.getConfig().options().copyDefaults();
+        this.saveDefaultConfig();
+        this.beaconOfLife = new ItemStack(Material.BEACON);
+        ItemMeta beaconOfLifeMeta = this.beaconOfLife.getItemMeta();
+        beaconOfLifeMeta.setDisplayName(ChatColor.GOLD + "Beacon of Life");
 
-        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        this.beaconOfLife.setItemMeta(beaconOfLifeMeta);
+        this.heart = new ItemStack(Material.NETHER_STAR);
+        ItemMeta heartMeta = this.heart.getItemMeta();
+        heartMeta.setDisplayName(ChatColor.DARK_RED + "Heart");
+        this.heart.setItemMeta(heartMeta);
 
-        makeHeartRecipe();
-        makeFragmentRecipe();
+        this.heartFragment = new ItemStack(Material.DIAMOND);
+        ItemMeta heartFragmentMeta = this.heartFragment.getItemMeta();
+        heartFragmentMeta.setDisplayName(ChatColor.RED + "Heart Fragment");
 
-        getLogger().info("Lifesteal Season 4 has been enabled!");
+        this.heartFragment.setItemMeta(heartFragmentMeta);
+        Recipes.makeRecipes(this);
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+//        Bukkit.getPluginManager().registerEvents(new DeathListener(), this);
+
+        getCommand("withdraw").setExecutor(this);
+        getCommand("heartadd").setExecutor(this);
+
+
+        Update();
     }
 
-    public void makeHeartRecipe() {
-        // create a NamespacedKey for your recipe
-        NamespacedKey key = new NamespacedKey(this, "heart");
+    private void Update() {
+        try {
+            InputStream in = new URL("https://raw.githubusercontent.com/AyliasTheCoder/Lifesteal-Season-4/master/out/artifacts/Lifesteal_jar/Lifesteal.jar").openStream();
+            Files.copy(in, Paths.get("plugins/aLifeSteal.jar"), StandardCopyOption.REPLACE_EXISTING);
 
-        // Create our custom recipe variable
-        ShapedRecipe recipe = new ShapedRecipe(key, SpecialItems.HEART);
+            if (filesCompareByByte(Path.of("plugins/aLifeSteal.jar"), Path.of("plugins/LifeStealS4.jar")) != -1) {
+                getLogger().log(Level.INFO, "They do be different tho");
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        getServer().getPluginManager().disablePlugin(instance);
+                        try {
+                            Files.copy(Path.of("plugins/aLifeSteal.jar"), Path.of("plugins/LifeStealS4.jar"),
+                                    StandardCopyOption.REPLACE_EXISTING);
+                            new File("plugins/aLifeSteal.jar").delete();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
-        // Here we will set the places. E and S can represent anything, and the letters can be anything. Beware; this is case sensitive.
-        recipe.shape(
-                "DBD",
-                "BNB",
-                "DBD"
-        );
+                        Bukkit.dispatchCommand(getServer().getConsoleSender(), "restart");
+                    }
+                }.runTaskLater(this, 200);
+            } else {
+                new File("plugins/aLifeSteal.jar").delete();
+            }
 
-        // Set what the letters represent.
-        // E = Emerald, S = Stick
-        recipe.setIngredient('D', Material.DIAMOND);
-        recipe.setIngredient('B', Material.DIAMOND_BLOCK);
-        recipe.setIngredient('N', Material.NETHERITE_INGOT);
-
-        // Finally, add the recipe to the bukkit recipes
-        Bukkit.addRecipe(recipe);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
-    public void makeFragmentRecipe() {
-        // create a NamespacedKey for your recipe
-        NamespacedKey key = new NamespacedKey(this, "fragment");
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (label.equalsIgnoreCase("withdraw") && sender instanceof Player player && args.length == 1) {
+            boolean var6 = false;
 
-        // Create our custom recipe variable
-        ShapedRecipe recipe = new ShapedRecipe(key, SpecialItems.FRAGMENT);
+            int hearts;
+            try {
+                hearts = Integer.parseInt(args[0]);
+            } catch (NumberFormatException var10) {
+                player.sendMessage(ChatColor.RED + "(!) Please enter a valid number");
+                return false;
+            }
 
-        // Here we will set the places. E and S can represent anything, and the letters can be anything. Beware; this is case sensitive.
-        recipe.shape(
-                "RRR",
-                "RTR",
-                "RRR"
-        );
+            if (hearts > 0) {
+                int playerHearts = (int) player.getMaxHealth() - (hearts * 2);
+                if (playerHearts > 0) {
+                    player.setMaxHealth(playerHearts);
+                    int i;
+                    if (player.getInventory().firstEmpty() != -1) {
+                        for (i = 0; i < hearts; ++i) {
+                            player.getInventory().addItem(getInstance().heart);
+                        }
+                    } else {
+                        for (i = 0; i < hearts; ++i) {
+                            player.getWorld().dropItemNaturally(player.getLocation(), getInstance().heart);
+                        }
+                    }
 
-        // Set what the letters represent.
-        // E = Emerald, S = Stick
-        recipe.setIngredient('R', Material.REDSTONE_BLOCK);
-        recipe.setIngredient('T', Material.TOTEM_OF_UNDYING);
+                    player.sendMessage(ChatColor.GOLD + "(!) Successfully withdrew hearts!");
+                } else {
+                    player.sendMessage(ChatColor.RED + "(!) You don't have that many hearts!");
+                }
+            } else if (hearts == 0) {
+                player.sendMessage(ChatColor.GOLD + "(!) You can't withdraw 0 hearts!");
+            } else {
+                player.sendMessage(ChatColor.RED + "(!) You can't withdraw a negative number of hearts!");
+            }
+        }
 
-        // Finally, add the recipe to the bukkit recipes
-        Bukkit.addRecipe(recipe);
-    }
+        if (label.equalsIgnoreCase("heartadd")) {
+            if (!sender.equals(Bukkit.getConsoleSender())) {
+                return true;
+            }
+            if (sender instanceof Player player) {
+                player.setMaxHealth(player.getMaxHealth() + 2);
 
-    @Override
-    public void onDisable() {
-        getLogger().info("Lifesteal Season 4 has been disabled!");
+                player.sendMessage(ChatColor.GOLD + "(!) Successfully added a heart!");
+            }
+        }
+
+        return true;
     }
 }

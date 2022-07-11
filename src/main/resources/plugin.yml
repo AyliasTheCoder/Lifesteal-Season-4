@@ -1,7 +1,7 @@
 name: LifestealS4
 version: 1.0
 author: Aylias
-main: me.aylias.plugins.lifesteal.old.LifeSteal
+main: me.aylias.plugins.lifesteal.season4.LifeSteal
 api-version: 1.17
 commands:
   withdraw:

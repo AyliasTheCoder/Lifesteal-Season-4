@@ -1,5 +1,6 @@
 package me.aylias.plugins.lifesteal.old;
 
+import me.aylias.plugins.lifesteal.season4.SpecialItems;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -41,14 +42,16 @@ public class DeathListener implements Listener {
             LifeSteal.getInstance().saveConfig();
             if (killer != null) {
                 dead.getInventory().clear();
-                Bukkit.getBanList(BanList.Type.NAME).addBan(dead.getName(), ChatColor.RED + "You died because of " + ChatColor.GOLD + killer.getName() + ChatColor.RED + ".", (Date)null, dead.getName());
+                Bukkit.getBanList(BanList.Type.NAME).addBan(dead.getName(), ChatColor.RED + "You died because of " + ChatColor.GOLD + killer.getName() + ChatColor.RED + ".", null, dead.getName());
                 ChatColor var10001 = ChatColor.RED;
                 dead.kickPlayer(var10001 + "You died because of " + ChatColor.GOLD + killer.getName() + ChatColor.RED + ".");
                 if (killer.getMaxHealth() <= 38.0D) {
                     killer.setMaxHealth(killer.getMaxHealth() + 2.0D);
+                } else {
+                    killer.getInventory().addItem(SpecialItems.HEART).forEach((index, item) -> killer.getWorld().dropItem(killer.getLocation(), item));
                 }
             } else {
-                Bukkit.getBanList(BanList.Type.NAME).addBan(dead.getName(), ChatColor.RED + "You died.", (Date)null, dead.getName());
+                Bukkit.getBanList(BanList.Type.NAME).addBan(dead.getName(), ChatColor.RED + "You died.", null, dead.getName());
                 dead.kickPlayer(ChatColor.RED + "You died.");
             }
         }
@@ -62,7 +65,7 @@ public class DeathListener implements Listener {
         } else {
             Events.deadPlayers = LifeSteal.instance.getConfig().getStringList("Dead");
             Events.deadPlayers.add(dead.getUniqueId().toString());
-            Bukkit.getBanList(BanList.Type.NAME).addBan(dead.getName(), ChatColor.RED + "You died.", (Date)null, dead.getName());
+            Bukkit.getBanList(BanList.Type.NAME).addBan(dead.getName(), ChatColor.RED + "You died.", null, dead.getName());
             dead.kickPlayer(ChatColor.RED + "You died.");
             LifeSteal.getInstance().getConfig().set("Dead", Events.deadPlayers);
         }
